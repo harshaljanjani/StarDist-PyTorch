@@ -1,0 +1,3 @@
+{
+  "python.analysis.extraPaths": ["./stardist_tools_"]
+}
