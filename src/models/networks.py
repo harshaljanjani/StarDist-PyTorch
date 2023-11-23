@@ -41,16 +41,18 @@ class BaseNetwork(nn.Module):
             gpu_ids (int list) -- which GPUs the network runs on: e.g., 0,1,2
         Return an initialized network.
         """
-        if len(gpu_ids)==1:
-            assert(torch.cuda.is_available()), "cuda is not available."
-            self.to(gpu_ids[0])
-
-        elif len(gpu_ids) > 1:
-            assert(torch.cuda.is_available()), "cuda is not available."
-            self.to(gpu_ids[0])
-            self = torch.nn.DataParallel(self, gpu_ids)  # multi-GPUs
+        if len(gpu_ids) == 1:
+            if torch.cuda.is_available():
+                self.to(gpu_ids[0])
+            else:
+                print("Warning: CUDA is not available. Using CPU instead.")
+        else:
+            if torch.cuda.is_available():
+                self.to(gpu_ids[0])
+                self = torch.nn.DataParallel(self, gpu_ids)  # multi-GPUs
+            else:
+                print("Warning: CUDA is not available. Using CPU instead.")
         self.init_weights(init_type, init_gain=init_gain)
-
 
     def init_weights(self, init_type='normal', init_gain=0.02):
         # https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/blob/14422fb8486a4a2bd991082c1cda50c3a41a755e/models/networks.py
